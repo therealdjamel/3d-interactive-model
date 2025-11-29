@@ -1,72 +1,64 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+/* Additional styles for 3D project */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&display=swap');
+
+/* Cyberpunk grid background */
+.grid-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        linear-gradient(90deg, #0a0c15 21px, transparent 1%) center,
+        linear-gradient(#0a0c15 21px, transparent 1%) center,
+        rgba(0,243,255,0.03);
+    background-size: 22px 22px;
+    z-index: 1;
+    opacity: 0.3;
 }
 
-body {
-    font-family: 'Orbitron', sans-serif;
-    background: #05060a;
-    color: #e7e7e7;
-    overflow: hidden;
-}
-
-#container {
+/* Glitch text effect */
+.glitch-text {
     position: relative;
-    width: 100vw;
-    height: 100vh;
+    display: inline-block;
 }
 
-#canvas {
-    display: block;
+.glitch-text::before,
+.glitch-text::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
 }
 
-#info {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    z-index: 100;
-    background: rgba(0, 0, 0, 0.7);
-    padding: 15px;
-    border-radius: 8px;
-    border: 1px solid rgba(0, 234, 255, 0.3);
-    backdrop-filter: blur(5px);
+.glitch-text::before {
+    left: 2px;
+    text-shadow: -2px 0 #ff00ff;
+    animation: glitch-1 2s infinite linear alternate-reverse;
 }
 
-#info h1 {
-    color: #00eaff;
-    margin-bottom: 8px;
-    font-size: 1.5rem;
-    text-shadow: 0 0 8px rgba(0, 234, 255, 0.5);
+.glitch-text::after {
+    left: -2px;
+    text-shadow: -2px 0 #00f3ff;
+    animation: glitch-2 3s infinite linear alternate-reverse;
 }
 
-#info p {
-    color: rgba(230, 230, 230, 0.8);
-    margin-bottom: 15px;
-    font-size: 0.9rem;
+@keyframes glitch-1 {
+    0% { clip: rect(42px, 9999px, 44px, 0); }
+    20% { clip: rect(12px, 9999px, 59px, 0); }
+    40% { clip: rect(48px, 9999px, 29px, 0); }
+    60% { clip: rect(42px, 9999px, 73px, 0); }
+    80% { clip: rect(63px, 9999px, 27px, 0); }
+    100% { clip: rect(34px, 9999px, 55px, 0); }
 }
 
-#controls {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-#controls button {
-    background: transparent;
-    color: #ffdb00;
-    border: 1px solid #ffdb00;
-    padding: 8px 12px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-family: 'Orbitron', sans-serif;
-    font-size: 0.8rem;
-    transition: all 0.3s ease;
-}
-
-#controls button:hover {
-    background: rgba(255, 219, 0, 0.1);
-    box-shadow: 0 0 10px rgba(255, 219, 0, 0.5);
+@keyframes glitch-2 {
+    0% { clip: rect(65px, 9999px, 100px, 0); }
+    20% { clip: rect(52px, 9999px, 74px, 0); }
+    40% { clip: rect(79px, 9999px, 85px, 0); }
+    60% { clip: rect(75px, 9999px, 5px, 0); }
+    80% { clip: rect(67px, 9999px, 61px, 0); }
+    100% { clip: rect(14px, 9999px, 79px, 0); }
 }

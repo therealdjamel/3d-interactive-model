@@ -3,25 +3,179 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive 3D Model - Three.js</title>
+    <title>3D Interactive Model - Cyberpunk Edition</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Orbitron', monospace;
+            background: #05060a;
+            color: #e7e7e7;
+            overflow: hidden;
+            background-image: 
+                radial-gradient(circle at 20% 80%, rgba(0,243,255,0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255,0,255,0.05) 0%, transparent 50%);
+        }
+
+        #container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        #canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        #ui {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px;
+            z-index: 100;
+            pointer-events: none;
+        }
+
+        #header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        #title {
+            font-size: 2.5rem;
+            background: linear-gradient(45deg, #00f3ff, #ff00ff, #ffeb00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(0,243,255,0.5);
+            margin-bottom: 10px;
+        }
+
+        #subtitle {
+            color: rgba(230,230,230,0.8);
+            font-size: 1rem;
+        }
+
+        #controls {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            pointer-events: all;
+        }
+
+        .control-btn {
+            background: transparent;
+            color: #00f3ff;
+            border: 2px solid #00f3ff;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-family: 'Orbitron', monospace;
+            font-size: 0.9rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            backdrop-filter: blur(10px);
+        }
+
+        .control-btn:hover {
+            background: #00f3ff;
+            color: #05060a;
+            box-shadow: 0 0 20px #00f3ff;
+            transform: translateY(-2px);
+        }
+
+        #loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 200;
+        }
+
+        #loading-text {
+            color: #00f3ff;
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px #00f3ff;
+        }
+
+        .loading-bar {
+            width: 200px;
+            height: 4px;
+            background: rgba(0,243,255,0.2);
+            border-radius: 2px;
+            overflow: hidden;
+            margin: 0 auto;
+        }
+
+        .loading-progress {
+            height: 100%;
+            background: linear-gradient(90deg, #00f3ff, #ff00ff);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                to bottom,
+                transparent 50%,
+                rgba(0, 0, 0, 0.1) 51%
+            );
+            background-size: 100% 4px;
+            z-index: 50;
+            pointer-events: none;
+            opacity: 0.3;
+        }
+    </style>
 </head>
 <body>
+    <div class="scanlines"></div>
+    
     <div id="container">
-        <div id="info">
-            <h1>Interactive 3D Model</h1>
-            <p>Drag to rotate • Scroll to zoom</p>
-            <div id="controls">
-                <button id="resetBtn">Reset View</button>
-                <button id="wireframeBtn">Toggle Wireframe</button>
-                <button id="animationBtn">Toggle Animation</button>
+        <div id="ui">
+            <div id="header">
+                <h1 id="title">CYBERPUNK 3D EXPERIENCE</h1>
+                <p id="subtitle">DRAG TO ROTATE • SCROLL TO ZOOM • EXPERIMENT WITH CONTROLS</p>
             </div>
         </div>
+
+        <div id="loading">
+            <div id="loading-text">INITIALIZING 3D ENVIRONMENT</div>
+            <div class="loading-bar">
+                <div class="loading-progress" id="loading-progress"></div>
+            </div>
+        </div>
+
         <canvas id="canvas"></canvas>
+
+        <div id="controls">
+            <button class="control-btn" id="resetBtn">RESET VIEW</button>
+            <button class="control-btn" id="wireframeBtn">WIREFRAME</button>
+            <button class="control-btn" id="animationBtn">ANIMATION</button>
+            <button class="control-btn" id="colorBtn">COLOR SCHEME</button>
+        </div>
     </div>
-    
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
