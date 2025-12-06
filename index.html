@@ -3,85 +3,601 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>myModel.glb Viewer</title>
+    <title>Xbox Series X - Cyberpunk Viewer</title>
     <style>
-        body { margin: 0; overflow: hidden; }
-        canvas { display: block; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { 
+            margin: 0; 
+            overflow: hidden; 
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+        
+        canvas { 
+            display: block; 
+            cursor: grab; 
+        }
+        
+        canvas:active {
+            cursor: grabbing;
+        }
+        
+        /* XBOX CYBERPUNK OVERLAY */
+        .xbox-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+        
+        /* XBOX LOGO */
+        .xbox-logo {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            font-size: 28px;
+            font-weight: 900;
+            color: #0f7;
+            text-shadow: 
+                0 0 20px #0f7,
+                0 0 40px #0f7,
+                0 0 60px #0f7;
+            letter-spacing: 2px;
+            animation: xboxGlow 2s ease-in-out infinite alternate;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .xbox-logo::before {
+            content: 'X';
+            color: #0f7;
+            font-size: 36px;
+            font-weight: 900;
+        }
+        
+        .xbox-logo::after {
+            content: 'BOX';
+            color: white;
+            font-size: 28px;
+        }
+        
+        @keyframes xboxGlow {
+            0% { filter: drop-shadow(0 0 10px #0f7); }
+            100% { filter: drop-shadow(0 0 30px #0f7); }
+        }
+        
+        /* INFO PANEL */
+        .info-panel {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            background: rgba(0, 20, 10, 0.8);
+            border: 2px solid #0f7;
+            border-radius: 15px;
+            padding: 20px;
+            color: white;
+            max-width: 300px;
+            backdrop-filter: blur(10px);
+            box-shadow: 
+                0 0 30px rgba(0, 255, 119, 0.3),
+                inset 0 0 0 1px rgba(0, 255, 119, 0.2);
+        }
+        
+        .info-title {
+            color: #0f7;
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .info-text {
+            color: #ccc;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        
+        .specs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .spec-item {
+            background: rgba(0, 40, 20, 0.5);
+            padding: 8px;
+            border-radius: 8px;
+            border: 1px solid rgba(0, 255, 119, 0.3);
+        }
+        
+        .spec-label {
+            color: #0f7;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .spec-value {
+            color: white;
+            font-size: 12px;
+            margin-top: 3px;
+        }
+        
+        /* CONTROLS */
+        .controls {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            background: rgba(0, 20, 10, 0.8);
+            padding: 15px 25px;
+            border-radius: 50px;
+            border: 2px solid #0f7;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 40px rgba(0, 255, 119, 0.3);
+        }
+        
+        .control-btn {
+            background: rgba(0, 255, 119, 0.1);
+            border: 1px solid #0f7;
+            color: #0f7;
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            pointer-events: all;
+        }
+        
+        .control-btn:hover {
+            background: rgba(0, 255, 119, 0.3);
+            box-shadow: 0 0 20px #0f7;
+            transform: translateY(-2px);
+        }
+        
+        /* CYBERPUNK SCANLINES */
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                to bottom,
+                transparent 50%,
+                rgba(0, 255, 119, 0.03) 51%
+            );
+            background-size: 100% 4px;
+            z-index: 1;
+            pointer-events: none;
+            opacity: 0.3;
+        }
+        
+        /* DATA STREAM */
+        .data-stream {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0.1;
+            background-image: 
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(0, 255, 119, 0.1) 2px,
+                    rgba(0, 255, 119, 0.1) 4px
+                );
+        }
+        
+        /* XBOX GRID BACKGROUND */
+        .grid-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(0, 255, 119, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 119, 0.05) 1px, transparent 1px);
+            background-size: 50px 50px, 50px 50px;
+            z-index: -1;
+            opacity: 0.3;
+        }
+        
+        /* FLOATING PARTICLES (XBOX GREEN) */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: #0f7;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #0f7;
+        }
+        
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .info-panel {
+                display: none;
+            }
+            
+            .controls {
+                flex-direction: column;
+                width: 90%;
+                border-radius: 15px;
+            }
+            
+            .xbox-logo {
+                font-size: 20px;
+                top: 15px;
+                left: 15px;
+            }
+        }
     </style>
 </head>
 <body>
+    <!-- CYBERPUNK BACKGROUND ELEMENTS -->
+    <div class="grid-bg"></div>
+    <div class="scanlines"></div>
+    <div class="data-stream"></div>
+    <div class="particles" id="particles"></div>
+    
+    <!-- XBOX OVERLAY UI -->
+    <div class="xbox-overlay">
+        <div class="xbox-logo">SERIES X</div>
+        
+        <div class="info-panel">
+            <div class="info-title">XBOX SERIES X</div>
+            <div class="info-text">
+                Next-gen gaming console with 12 TFLOPS of power. 
+                Experience true 4K gaming at 120 FPS with ray tracing.
+            </div>
+            <div class="specs">
+                <div class="spec-item">
+                    <div class="spec-label">CPU</div>
+                    <div class="spec-value">8-Core Zen 2</div>
+                </div>
+                <div class="spec-item">
+                    <div class="spec-label">GPU</div>
+                    <div class="spec-value">12 TFLOPS</div>
+                </div>
+                <div class="spec-item">
+                    <div class="spec-label">RAM</div>
+                    <div class="spec-value">16GB GDDR6</div>
+                </div>
+                <div class="spec-item">
+                    <div class="spec-label">STORAGE</div>
+                    <div class="spec-value">1TB SSD</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button class="control-btn" id="rotateToggle">
+                <i class="fas fa-sync-alt"></i> AUTO ROTATE
+            </button>
+            <button class="control-btn" id="resetView">
+                <i class="fas fa-home"></i> RESET VIEW
+            </button>
+            <button class="control-btn" id="screenshot">
+                <i class="fas fa-camera"></i> SCREENSHOT
+            </button>
+            <button class="control-btn" id="fullscreen">
+                <i class="fas fa-expand"></i> FULLSCREEN
+            </button>
+        </div>
+    </div>
 
-<script type="importmap">
-{
-  "imports": {
-    "three": "./build/three.module.js",
-    "three/addons/": "./examples/jsm/"
-  }
-}
-</script>
+    <script type="importmap">
+    {
+      "imports": {
+        "three": "./build/three.module.js",
+        "three/addons/": "./examples/jsm/"
+      }
+    }
+    </script>
 
-<script type="module">
-    import * as THREE from 'three';
-    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    // ... rest of your code (same as before)
-    const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x222222);
+    <script type="module">
+        import * as THREE from 'three';
+        import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
-    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    document.body.appendChild(renderer.domElement);
+        // SCENE SETUP WITH XBOX THEME
+        const scene = new THREE.Scene();
+        
+        // XBOX GREEN BACKGROUND GRADIENT
+        scene.background = new THREE.Color(0x001a0d);
+        
+        // Add gradient background
+        const gradientTexture = new THREE.CanvasTexture(createGradientCanvas());
+        scene.background = gradientTexture;
+        
+        function createGradientCanvas() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 256;
+            canvas.height = 256;
+            const ctx = canvas.getContext('2d');
+            
+            // XBOX Green gradient
+            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            gradient.addColorStop(0, '#001a0d');  // Dark green
+            gradient.addColorStop(0.5, '#003320'); // Medium green
+            gradient.addColorStop(1, '#001a0d');  // Dark green
+            
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            return canvas;
+        }
 
-    // Lights
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-    scene.add(ambientLight);
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-    directionalLight.position.set(5, 10, 7);
-    scene.add(directionalLight);
+        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ 
+            antialias: true,
+            alpha: true,
+            powerPreference: "high-performance"
+        });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        document.body.appendChild(renderer.domElement);
 
-    // Controls
-    const controls = new OrbitControls(camera, renderer.domElement);
-    controls.enableDamping = true;
+        // XBOX THEMED LIGHTS
+        const ambientLight = new THREE.AmbientLight(0x0f7, 0.4); // XBOX green ambient
+        scene.add(ambientLight);
+        
+        // Main directional light (XBOX green)
+        const mainLight = new THREE.DirectionalLight(0x0f7, 1.5);
+        mainLight.position.set(10, 20, 10);
+        mainLight.castShadow = true;
+        mainLight.shadow.mapSize.width = 2048;
+        mainLight.shadow.mapSize.height = 2048;
+        scene.add(mainLight);
+        
+        // Accent lights (white for contrast)
+        const accentLight1 = new THREE.PointLight(0xffffff, 0.8, 50);
+        accentLight1.position.set(-10, 5, -10);
+        scene.add(accentLight1);
+        
+        const accentLight2 = new THREE.PointLight(0xffffff, 0.6, 50);
+        accentLight2.position.set(10, 5, 10);
+        scene.add(accentLight2);
+        
+        // XBOX green rim light
+        const rimLight = new THREE.DirectionalLight(0x0f7, 0.7);
+        rimLight.position.set(-5, 5, -10);
+        scene.add(rimLight);
 
-    // Load your model
-    const loader = new GLTFLoader();
-    loader.load(
-        './myModel.glb',
-        (gltf) => {
-            const model = gltf.scene;
-            scene.add(model);
+        // Add fog for depth (XBOX green tint)
+        scene.fog = new THREE.Fog(0x001a0d, 10, 50);
 
-            // Auto-center and auto-scale
-            const box = new THREE.Box3().setFromObject(model);
-            const center = box.getCenter(new THREE.Vector3());
-            const size = box.getSize(new THREE.Vector3());
-            model.position.sub(center);
+        // Controls
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.minDistance = 2;
+        controls.maxDistance = 20;
+        
+        // Auto-rotation state
+        let autoRotate = true;
+        controls.autoRotate = autoRotate;
+        controls.autoRotateSpeed = 0.5;
 
-            const maxDim = Math.max(size.x, size.y, size.z);
-            camera.position.z = maxDim * 2.5;
+        // Load Xbox Series X model
+        const loader = new GLTFLoader();
+        loader.load(
+            './myModel.glb',
+            (gltf) => {
+                const model = gltf.scene;
+                scene.add(model);
+                
+                // Enable shadows
+                model.traverse((node) => {
+                    if (node.isMesh) {
+                        node.castShadow = true;
+                        node.receiveShadow = true;
+                        
+                        // Enhance Xbox green materials
+                        if (node.material) {
+                            node.material.metalness = 0.8;
+                            node.material.roughness = 0.2;
+                            node.material.envMapIntensity = 1.5;
+                        }
+                    }
+                });
+
+                // Auto-center and auto-scale
+                const box = new THREE.Box3().setFromObject(model);
+                const center = box.getCenter(new THREE.Vector3());
+                const size = box.getSize(new THREE.Vector3());
+                model.position.sub(center);
+
+                const maxDim = Math.max(size.x, size.y, size.z);
+                camera.position.set(maxDim * 1.5, maxDim * 0.8, maxDim * 1.5);
+                controls.target.set(0, size.y * 0.2, 0);
+                controls.update();
+                
+                // Add subtle rotation animation
+                model.userData.originalRotation = model.rotation.clone();
+                
+                console.log('Xbox Series X loaded successfully!');
+            },
+            (progress) => {
+                const percent = (progress.loaded / progress.total * 100).toFixed(1);
+                console.log(`Loading Xbox: ${percent}%`);
+            },
+            (error) => console.error('Load error:', error)
+        );
+
+        // Add XBOX-themed environment
+        function createXboxEnvironment() {
+            // Grid floor
+            const gridHelper = new THREE.GridHelper(20, 20, 0x0f7, 0x003320);
+            gridHelper.position.y = -2;
+            scene.add(gridHelper);
+            
+            // Floating Xbox logos as particles
+            const logoGeometry = new THREE.PlaneGeometry(0.5, 0.5);
+            const logoMaterial = new THREE.MeshBasicMaterial({
+                color: 0x0f7,
+                transparent: true,
+                opacity: 0.1,
+                side: THREE.DoubleSide
+            });
+            
+            for (let i = 0; i < 10; i++) {
+                const logo = new THREE.Mesh(logoGeometry, logoMaterial);
+                logo.position.set(
+                    (Math.random() - 0.5) * 20,
+                    Math.random() * 10,
+                    (Math.random() - 0.5) * 20
+                );
+                logo.rotation.x = Math.PI / 2;
+                scene.add(logo);
+            }
+        }
+        
+        createXboxEnvironment();
+
+        // Create floating particles
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.top = `${Math.random() * 100}%`;
+                particle.style.animation = `float ${3 + Math.random() * 4}s infinite ease-in-out`;
+                particle.style.animationDelay = `${Math.random() * 2}s`;
+                particlesContainer.appendChild(particle);
+            }
+        }
+        
+        createParticles();
+
+        // UI CONTROLS
+        document.getElementById('rotateToggle').addEventListener('click', () => {
+            autoRotate = !autoRotate;
+            controls.autoRotate = autoRotate;
+            const btn = document.getElementById('rotateToggle');
+            btn.innerHTML = autoRotate 
+                ? '<i class="fas fa-pause"></i> PAUSE ROTATE' 
+                : '<i class="fas fa-sync-alt"></i> AUTO ROTATE';
+            btn.style.background = autoRotate 
+                ? 'rgba(0, 255, 119, 0.3)' 
+                : 'rgba(0, 255, 119, 0.1)';
+        });
+
+        document.getElementById('resetView').addEventListener('click', () => {
+            controls.reset();
+            camera.position.set(5, 3, 5);
             controls.target.set(0, 0, 0);
             controls.update();
-        },
-        (progress) => console.log((progress.loaded / progress.total * 100) + '% loaded'),
-        (error) => console.error('Load error:', error)
-    );
+        });
 
-    // Animation loop
-    function animate() {
-        requestAnimationFrame(animate);
-        controls.update();
-        renderer.render(scene, camera);
-    }
-    animate();
+        document.getElementById('screenshot').addEventListener('click', () => {
+            renderer.render(scene, camera);
+            const screenshot = renderer.domElement.toDataURL('image/png');
+            const link = document.createElement('a');
+            link.download = 'xbox-series-x-screenshot.png';
+            link.href = screenshot;
+            link.click();
+            
+            // Visual feedback
+            const btn = document.getElementById('screenshot');
+            btn.style.background = 'rgba(0, 255, 119, 0.5)';
+            setTimeout(() => {
+                btn.style.background = 'rgba(0, 255, 119, 0.1)';
+            }, 300);
+        });
 
-    // Resize handler
-    window.addEventListener('resize', () => {
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(window.innerWidth, window.innerHeight);
-    });
-</script>
+        document.getElementById('fullscreen').addEventListener('click', () => {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            } else {
+                document.exitFullscreen();
+            }
+        });
+
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            // Auto-rotate if enabled
+            if (autoRotate) {
+                controls.update();
+            }
+            
+            // Update floating particles
+            updateParticles();
+            
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // Update particles animation
+        function updateParticles() {
+            const particles = document.querySelectorAll('.particle');
+            particles.forEach(particle => {
+                const x = parseFloat(particle.style.left);
+                const y = parseFloat(particle.style.top);
+                
+                // Move particles slightly
+                particle.style.left = `${(x + 0.02) % 100}%`;
+                particle.style.top = `${(y + Math.sin(Date.now() * 0.001 + x) * 0.02) % 100}%`;
+            });
+        }
+
+        // Resize handler
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // Add CSS animation for particles
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes float {
+                0%, 100% { transform: translateY(0) scale(1); opacity: 0.3; }
+                50% { transform: translateY(-10px) scale(1.2); opacity: 0.7; }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Initial UI state
+        document.getElementById('rotateToggle').style.background = 'rgba(0, 255, 119, 0.3)';
+        
+        console.log('Xbox Series X Cyberpunk Viewer Ready!');
+    </script>
 </body>
 </html>
