@@ -9,13 +9,14 @@
             margin: 0; 
             overflow: hidden; 
             background: #000;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
         canvas { 
             display: block; 
         }
         
-        /* CYBERPUNK OVERLAY - DOESN'T TOUCH 3D */
+        /* CYBERPUNK OVERLAY */
         .cyberpunk-ui {
             position: fixed;
             top: 0;
@@ -45,6 +46,203 @@
         @keyframes neonFlicker {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.8; }
+        }
+        
+        /* INTERACTION MENU */
+        .interaction-menu {
+            position: absolute;
+            top: 70px;
+            left: 20px;
+            background: rgba(0, 20, 10, 0.9);
+            border: 2px solid #0f7;
+            border-radius: 10px;
+            padding: 15px;
+            width: 280px;
+            backdrop-filter: blur(10px);
+            box-shadow: 
+                0 0 30px rgba(0, 255, 119, 0.3),
+                inset 0 0 0 1px rgba(0, 255, 119, 0.2);
+            pointer-events: all;
+        }
+        
+        .menu-header {
+            color: #0f7;
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .menu-toggle {
+            background: transparent;
+            border: 1px solid #0f7;
+            color: #0f7;
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .menu-toggle:hover {
+            background: rgba(0, 255, 119, 0.2);
+        }
+        
+        .menu-content {
+            max-height: 400px;
+            overflow-y: auto;
+            transition: max-height 0.3s ease;
+        }
+        
+        .menu-content.collapsed {
+            max-height: 0;
+            overflow: hidden;
+        }
+        
+        .menu-section {
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(0, 255, 119, 0.2);
+            padding-bottom: 15px;
+        }
+        
+        .menu-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+        
+        .section-title {
+            color: #0f7;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .section-title i {
+            font-size: 12px;
+        }
+        
+        /* TOGGLE SWITCHES */
+        .toggle-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .toggle-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px;
+            background: rgba(0, 255, 119, 0.05);
+            border-radius: 6px;
+            border: 1px solid rgba(0, 255, 119, 0.2);
+        }
+        
+        .toggle-label {
+            color: #ccc;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            width: 40px;
+            height: 20px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 255, 119, 0.2);
+            border: 1px solid #0f7;
+            transition: .3s;
+            border-radius: 20px;
+        }
+        
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 14px;
+            width: 14px;
+            left: 2px;
+            bottom: 2px;
+            background-color: #0f7;
+            transition: .3s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .toggle-slider {
+            background-color: rgba(0, 255, 119, 0.4);
+        }
+        
+        input:checked + .toggle-slider:before {
+            transform: translateX(20px);
+        }
+        
+        /* SLIDERS */
+        .slider-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .slider-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .slider-label {
+            color: #ccc;
+            font-size: 13px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .slider-value {
+            color: #0f7;
+            font-weight: bold;
+        }
+        
+        .cyber-slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            background: rgba(0, 255, 119, 0.1);
+            border-radius: 3px;
+            outline: none;
+            border: 1px solid rgba(0, 255, 119, 0.3);
+        }
+        
+        .cyber-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            background: #0f7;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 10px #0f7;
         }
         
         /* XBOX INFO PANEL */
@@ -204,6 +402,13 @@
                 display: none;
             }
             
+            .interaction-menu {
+                width: 90%;
+                left: 50%;
+                transform: translateX(-50%);
+                top: 60px;
+            }
+            
             .xbox-logo {
                 font-size: 18px;
                 top: 15px;
@@ -228,6 +433,126 @@
     <!-- CYBERPUNK UI -->
     <div class="cyberpunk-ui">
         <div class="xbox-logo">XBOX SERIES X</div>
+        
+        <!-- INTERACTION MENU -->
+        <div class="interaction-menu">
+            <div class="menu-header">
+                INTERACTION MENU
+                <button class="menu-toggle" id="menuToggle">−</button>
+            </div>
+            <div class="menu-content" id="menuContent">
+                <!-- CAMERA CONTROLS -->
+                <div class="menu-section">
+                    <div class="section-title">
+                        <i>📷</i> CAMERA CONTROLS
+                    </div>
+                    <div class="slider-group">
+                        <div class="slider-item">
+                            <div class="slider-label">
+                                Camera Zoom
+                                <span class="slider-value" id="zoomValue">50%</span>
+                            </div>
+                            <input type="range" min="10" max="200" value="50" class="cyber-slider" id="cameraZoom">
+                        </div>
+                        <div class="slider-item">
+                            <div class="slider-label">
+                                Rotation Speed
+                                <span class="slider-value" id="rotationValue">50%</span>
+                            </div>
+                            <input type="range" min="0" max="100" value="50" class="cyber-slider" id="rotationSpeed">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- LIGHTING CONTROLS -->
+                <div class="menu-section">
+                    <div class="section-title">
+                        <i>💡</i> LIGHTING
+                    </div>
+                    <div class="slider-group">
+                        <div class="slider-item">
+                            <div class="slider-label">
+                                Ambient Light
+                                <span class="slider-value" id="ambientValue">60%</span>
+                            </div>
+                            <input type="range" min="0" max="100" value="60" class="cyber-slider" id="ambientLight">
+                        </div>
+                        <div class="slider-item">
+                            <div class="slider-label">
+                                Directional Light
+                                <span class="slider-value" id="directionalValue">100%</span>
+                            </div>
+                            <input type="range" min="0" max="200" value="100" class="cyber-slider" id="directionalLight">
+                        </div>
+                    </div>
+                    <div class="toggle-group">
+                        <div class="toggle-item">
+                            <span class="toggle-label">Green Tint</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="greenTint" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="toggle-item">
+                            <span class="toggle-label">Shadows</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="shadows" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- VISUAL EFFECTS -->
+                <div class="menu-section">
+                    <div class="section-title">
+                        <i>🎨</i> VISUAL EFFECTS
+                    </div>
+                    <div class="toggle-group">
+                        <div class="toggle-item">
+                            <span class="toggle-label">Wireframe Mode</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="wireframe">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="toggle-item">
+                            <span class="toggle-label">Grid Background</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="showGrid" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="toggle-item">
+                            <span class="toggle-label">Scanlines</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="showScanlines" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="toggle-item">
+                            <span class="toggle-label">Data Stream</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="showDataStream" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- PRESETS -->
+                <div class="menu-section">
+                    <div class="section-title">
+                        <i>⚡</i> PRESETS
+                    </div>
+                    <div class="preset-buttons" style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        <button class="cyber-btn" style="padding: 6px 12px; font-size: 12px;" id="presetDefault">Default</button>
+                        <button class="cyber-btn" style="padding: 6px 12px; font-size: 12px;" id="presetInspection">Inspection</button>
+                        <button class="cyber-btn" style="padding: 6px 12px; font-size: 12px;" id="presetCyberpunk">Cyberpunk</button>
+                    </div>
+                </div>
+            </div>
+        </div>
         
         <!-- XBOX INFO PANEL -->
         <div class="xbox-info">
@@ -284,59 +609,236 @@
         import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
         import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
-        // KEEP EVERYTHING EXACTLY THE SAME AS YOUR WORKING VERSION
+        // Scene setup
         const scene = new THREE.Scene();
-        
-        // CYBERPUNK BACKGROUND - ONLY CHANGE
         const gradientTexture = new THREE.CanvasTexture(createCyberpunkGradient());
         scene.background = gradientTexture;
         
         const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
         const renderer = new THREE.WebGLRenderer({ antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
         document.body.appendChild(renderer.domElement);
 
-        // CYBERPUNK LIGHTING - ONLY CHANGE
-        const ambientLight = new THREE.AmbientLight(0x0f7, 0.6); // Green tint
+        // Lighting
+        let ambientLight = new THREE.AmbientLight(0x0f7, 0.6);
         scene.add(ambientLight);
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+        
+        let directionalLight = new THREE.DirectionalLight(0xffffff, 1);
         directionalLight.position.set(5, 10, 7);
+        directionalLight.castShadow = true;
+        directionalLight.shadow.mapSize.width = 2048;
+        directionalLight.shadow.mapSize.height = 2048;
         scene.add(directionalLight);
 
-        // CONTROLS - EXACTLY THE SAME
+        // Controls
         const controls = new OrbitControls(camera, renderer.domElement);
         controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        let currentModel = null;
 
-        // LOAD MODEL - EXACTLY THE SAME AS YOUR WORKING CODE
+        // UI Elements
+        const loadingElement = document.getElementById('loading');
+        const menuToggle = document.getElementById('menuToggle');
+        const menuContent = document.getElementById('menuContent');
+        let isMenuCollapsed = false;
+
+        // Toggle menu collapse
+        menuToggle.addEventListener('click', () => {
+            isMenuCollapsed = !isMenuCollapsed;
+            menuContent.classList.toggle('collapsed', isMenuCollapsed);
+            menuToggle.textContent = isMenuCollapsed ? '+' : '−';
+        });
+
+        // Load model
         const loader = new GLTFLoader();
         loader.load(
             './myModel.glb',
             (gltf) => {
-                const model = gltf.scene;
-                scene.add(model);
+                currentModel = gltf.scene;
+                scene.add(currentModel);
 
-                // AUTO-CENTER AND AUTO-SCALE - EXACTLY YOUR CODE
-                const box = new THREE.Box3().setFromObject(model);
+                // Auto-center and scale
+                const box = new THREE.Box3().setFromObject(currentModel);
                 const center = box.getCenter(new THREE.Vector3());
                 const size = box.getSize(new THREE.Vector3());
-                model.position.sub(center);
+                currentModel.position.sub(center);
 
                 const maxDim = Math.max(size.x, size.y, size.z);
                 camera.position.z = maxDim * 2.5;
                 controls.target.set(0, 0, 0);
                 controls.update();
                 
-                // Hide loading
-                document.getElementById('loading').classList.add('hidden');
+                // Initialize UI controls after model loads
+                initializeUIControls();
+                loadingElement.classList.add('hidden');
             },
             (progress) => {
                 const percent = Math.round((progress.loaded / progress.total) * 100);
-                document.getElementById('loading').textContent = `LOADING XBOX SERIES X... ${percent}%`;
+                loadingElement.textContent = `LOADING XBOX SERIES X... ${percent}%`;
             },
             (error) => console.error('Load error:', error)
         );
 
-        // ANIMATION LOOP - EXACTLY THE SAME
+        // Initialize UI Controls
+        function initializeUIControls() {
+            // Camera Controls
+            const cameraZoom = document.getElementById('cameraZoom');
+            const zoomValue = document.getElementById('zoomValue');
+            const rotationSpeed = document.getElementById('rotationSpeed');
+            const rotationValue = document.getElementById('rotationValue');
+            
+            cameraZoom.addEventListener('input', (e) => {
+                const value = e.target.value;
+                zoomValue.textContent = `${value}%`;
+                camera.position.z = (value / 50) * (currentModel ? new THREE.Box3().setFromObject(currentModel).getSize(new THREE.Vector3()).length() * 1.5 : 10);
+            });
+            
+            rotationSpeed.addEventListener('input', (e) => {
+                const value = e.target.value;
+                rotationValue.textContent = `${value}%`;
+                controls.rotateSpeed = value / 50;
+            });
+            
+            // Lighting Controls
+            const ambientLightSlider = document.getElementById('ambientLight');
+            const ambientValue = document.getElementById('ambientValue');
+            const directionalLightSlider = document.getElementById('directionalLight');
+            const directionalValue = document.getElementById('directionalValue');
+            const greenTintToggle = document.getElementById('greenTint');
+            const shadowsToggle = document.getElementById('shadows');
+            
+            ambientLightSlider.addEventListener('input', (e) => {
+                const value = e.target.value;
+                ambientValue.textContent = `${value}%`;
+                ambientLight.intensity = value / 100;
+            });
+            
+            directionalLightSlider.addEventListener('input', (e) => {
+                const value = e.target.value;
+                directionalValue.textContent = `${value}%`;
+                directionalLight.intensity = value / 100;
+            });
+            
+            greenTintToggle.addEventListener('change', (e) => {
+                ambientLight.color.setHex(e.target.checked ? 0x0f7 : 0xffffff);
+            });
+            
+            shadowsToggle.addEventListener('change', (e) => {
+                renderer.shadowMap.enabled = e.target.checked;
+                directionalLight.castShadow = e.target.checked;
+            });
+            
+            // Visual Effects
+            const wireframeToggle = document.getElementById('wireframe');
+            const showGridToggle = document.getElementById('showGrid');
+            const showScanlinesToggle = document.getElementById('showScanlines');
+            const showDataStreamToggle = document.getElementById('showDataStream');
+            
+            wireframeToggle.addEventListener('change', (e) => {
+                if (currentModel) {
+                    currentModel.traverse((child) => {
+                        if (child.isMesh) {
+                            child.material.wireframe = e.target.checked;
+                        }
+                    });
+                }
+            });
+            
+            showGridToggle.addEventListener('change', (e) => {
+                if (e.target.checked) {
+                    scene.background = gradientTexture;
+                } else {
+                    scene.background = new THREE.Color(0x000000);
+                }
+            });
+            
+            showScanlinesToggle.addEventListener('change', (e) => {
+                document.querySelector('.scanlines').style.display = e.target.checked ? 'block' : 'none';
+            });
+            
+            showDataStreamToggle.addEventListener('change', (e) => {
+                document.querySelector('.data-stream').style.display = e.target.checked ? 'block' : 'none';
+            });
+            
+            // Presets
+            document.getElementById('presetDefault').addEventListener('click', () => {
+                // Reset to defaults
+                cameraZoom.value = 50;
+                zoomValue.textContent = '50%';
+                rotationSpeed.value = 50;
+                rotationValue.textContent = '50%';
+                ambientLightSlider.value = 60;
+                ambientValue.textContent = '60%';
+                directionalLightSlider.value = 100;
+                directionalValue.textContent = '100%';
+                greenTintToggle.checked = true;
+                shadowsToggle.checked = true;
+                wireframeToggle.checked = false;
+                showGridToggle.checked = true;
+                showScanlinesToggle.checked = true;
+                showDataStreamToggle.checked = true;
+                
+                // Apply values
+                cameraZoom.dispatchEvent(new Event('input'));
+                rotationSpeed.dispatchEvent(new Event('input'));
+                ambientLightSlider.dispatchEvent(new Event('input'));
+                directionalLightSlider.dispatchEvent(new Event('input'));
+                greenTintToggle.dispatchEvent(new Event('change'));
+                shadowsToggle.dispatchEvent(new Event('change'));
+                wireframeToggle.dispatchEvent(new Event('change'));
+                showGridToggle.dispatchEvent(new Event('change'));
+                showScanlinesToggle.dispatchEvent(new Event('change'));
+                showDataStreamToggle.dispatchEvent(new Event('change'));
+            });
+            
+            document.getElementById('presetInspection').addEventListener('click', () => {
+                // Inspection mode - wireframe with bright lighting
+                cameraZoom.value = 30;
+                zoomValue.textContent = '30%';
+                ambientLightSlider.value = 100;
+                ambientValue.textContent = '100%';
+                directionalLightSlider.value = 150;
+                directionalValue.textContent = '150%';
+                greenTintToggle.checked = false;
+                wireframeToggle.checked = true;
+                showGridToggle.checked = false;
+                
+                cameraZoom.dispatchEvent(new Event('input'));
+                ambientLightSlider.dispatchEvent(new Event('input'));
+                directionalLightSlider.dispatchEvent(new Event('input'));
+                greenTintToggle.dispatchEvent(new Event('change'));
+                wireframeToggle.dispatchEvent(new Event('change'));
+                showGridToggle.dispatchEvent(new Event('change'));
+            });
+            
+            document.getElementById('presetCyberpunk').addEventListener('click', () => {
+                // Cyberpunk mode - green tint with effects
+                cameraZoom.value = 70;
+                zoomValue.textContent = '70%';
+                ambientLightSlider.value = 40;
+                ambientValue.textContent = '40%';
+                directionalLightSlider.value = 80;
+                directionalValue.textContent = '80%';
+                greenTintToggle.checked = true;
+                shadowsToggle.checked = false;
+                wireframeToggle.checked = false;
+                showGridToggle.checked = true;
+                showScanlinesToggle.checked = true;
+                showDataStreamToggle.checked = true;
+                
+                cameraZoom.dispatchEvent(new Event('input'));
+                ambientLightSlider.dispatchEvent(new Event('input'));
+                directionalLightSlider.dispatchEvent(new Event('input'));
+                greenTintToggle.dispatchEvent(new Event('change'));
+                shadowsToggle.dispatchEvent(new Event('change'));
+                wireframeToggle.dispatchEvent(new Event('change'));
+                showGridToggle.dispatchEvent(new Event('change'));
+            });
+        }
+
+        // Animation loop
         function animate() {
             requestAnimationFrame(animate);
             controls.update();
@@ -344,21 +846,20 @@
         }
         animate();
 
-        // RESIZE HANDLER - EXACTLY THE SAME
+        // Resize handler
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
         });
 
-        // CYBERPUNK GRADIENT FUNCTION - NEW
+        // Create cyberpunk gradient background
         function createCyberpunkGradient() {
             const canvas = document.createElement('canvas');
             canvas.width = 512;
             canvas.height = 512;
             const ctx = canvas.getContext('2d');
             
-            // Cyberpunk gradient
             const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
             gradient.addColorStop(0, '#000000');
             gradient.addColorStop(0.3, '#001a0d');
@@ -369,7 +870,7 @@
             ctx.fillStyle = gradient;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             
-            // Add grid
+            // Add grid if enabled
             ctx.strokeStyle = 'rgba(0, 255, 119, 0.1)';
             ctx.lineWidth = 1;
             
@@ -387,13 +888,12 @@
                 ctx.stroke();
             }
             
-            // Add some glowing dots
+            // Add glowing dots
             ctx.fillStyle = 'rgba(0, 255, 119, 0.2)';
             for (let i = 0; i < 50; i++) {
                 const x = Math.random() * canvas.width;
                 const y = Math.random() * canvas.height;
                 const radius = Math.random() * 3;
-                
                 ctx.beginPath();
                 ctx.arc(x, y, radius, 0, Math.PI * 2);
                 ctx.fill();
@@ -402,7 +902,7 @@
             return canvas;
         }
 
-        // BUTTONS - NEW
+        // Screenshot and fullscreen buttons
         document.getElementById('screenshot').addEventListener('click', () => {
             renderer.render(scene, camera);
             const screenshot = renderer.domElement.toDataURL('image/png');
