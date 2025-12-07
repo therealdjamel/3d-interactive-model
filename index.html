@@ -337,6 +337,14 @@
             transform: translateY(-2px);
         }
         
+        .cyber-btn.active {
+            background: rgba(0, 255, 119, 0.3);
+            box-shadow: 
+                0 0 15px #0f7,
+                inset 0 0 10px rgba(0, 255, 119, 0.2);
+            color: #fff;
+        }
+        
         /* LOADING */
         .loading {
             position: fixed;
@@ -396,6 +404,45 @@
             opacity: 0.3;
         }
         
+        /* ROTATION INDICATOR */
+        .rotation-indicator {
+            position: absolute;
+            bottom: 80px;
+            right: 20px;
+            background: rgba(0, 20, 10, 0.8);
+            border: 2px solid #0f7;
+            border-radius: 10px;
+            padding: 15px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 20px rgba(0, 255, 119, 0.3);
+            display: none;
+            pointer-events: none;
+        }
+        
+        .rotation-indicator.active {
+            display: block;
+            animation: pulse 2s infinite;
+        }
+        
+        .rotation-text {
+            color: #0f7;
+            font-size: 14px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .rotation-speed {
+            color: white;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
         /* RESPONSIVE */
         @media (max-width: 768px) {
             .xbox-info {
@@ -418,6 +465,13 @@
             .controls {
                 flex-direction: column;
                 width: 90%;
+            }
+            
+            .rotation-indicator {
+                bottom: 120px;
+                right: 10px;
+                left: 10px;
+                text-align: center;
             }
         }
     </style>
@@ -460,6 +514,22 @@
                                 <span class="slider-value" id="rotationValue">50%</span>
                             </div>
                             <input type="range" min="0" max="100" value="50" class="cyber-slider" id="rotationSpeed">
+                        </div>
+                        <div class="slider-item">
+                            <div class="slider-label">
+                                Auto Rotation Speed
+                                <span class="slider-value" id="autoRotationValue">30%</span>
+                            </div>
+                            <input type="range" min="0" max="100" value="30" class="cyber-slider" id="autoRotationSpeed">
+                        </div>
+                    </div>
+                    <div class="toggle-group">
+                        <div class="toggle-item">
+                            <span class="toggle-label">Auto Rotation</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="autoRotation">
+                                <span class="toggle-slider"></span>
+                            </label>
                         </div>
                     </div>
                 </div>
@@ -549,6 +619,7 @@
                         <button class="cyber-btn" style="padding: 6px 12px; font-size: 12px;" id="presetDefault">Default</button>
                         <button class="cyber-btn" style="padding: 6px 12px; font-size: 12px;" id="presetInspection">Inspection</button>
                         <button class="cyber-btn" style="padding: 6px 12px; font-size: 12px;" id="presetCyberpunk">Cyberpunk</button>
+                        <button class="cyber-btn" style="padding: 6px 12px; font-size: 12px;" id="presetShowcase">Showcase</button>
                     </div>
                 </div>
             </div>
@@ -587,6 +658,12 @@
                     <div class="spec-value">Hardware</div>
                 </div>
             </div>
+        </div>
+        
+        <!-- ROTATION INDICATOR -->
+        <div class="rotation-indicator" id="rotationIndicator">
+            <div class="rotation-text">AUTO ROTATION ACTIVE</div>
+            <div class="rotation-speed">Speed: <span id="currentRotationSpeed">30%</span></div>
         </div>
         
         <div class="controls">
@@ -637,6 +714,12 @@
         controls.enableDamping = true;
         controls.dampingFactor = 0.05;
         let currentModel = null;
+        
+        // Auto rotation variables
+        let autoRotationEnabled = false;
+        let autoRotationSpeed = 0.5; // Default speed
+        const rotationIndicator = document.getElementById('rotationIndicator');
+        const currentRotationSpeedSpan = document.getElementById('currentRotationSpeed');
 
         // UI Elements
         const loadingElement = document.getElementById('loading');
@@ -688,6 +771,9 @@
             const zoomValue = document.getElementById('zoomValue');
             const rotationSpeed = document.getElementById('rotationSpeed');
             const rotationValue = document.getElementById('rotationValue');
+            const autoRotationSpeedSlider = document.getElementById('autoRotationSpeed');
+            const autoRotationValue = document.getElementById('autoRotationValue');
+            const autoRotationToggle = document.getElementById('autoRotation');
             
             cameraZoom.addEventListener('input', (e) => {
                 const value = e.target.value;
@@ -699,6 +785,26 @@
                 const value = e.target.value;
                 rotationValue.textContent = `${value}%`;
                 controls.rotateSpeed = value / 50;
+            });
+            
+            autoRotationSpeedSlider.addEventListener('input', (e) => {
+                const value = e.target.value;
+                autoRotationValue.textContent = `${value}%`;
+                autoRotationSpeed = value / 100;
+                currentRotationSpeedSpan.textContent = `${value}%`;
+            });
+            
+            autoRotationToggle.addEventListener('change', (e) => {
+                autoRotationEnabled = e.target.checked;
+                controls.autoRotate = autoRotationEnabled;
+                controls.autoRotateSpeed = autoRotationSpeed * 2;
+                
+                // Show/hide rotation indicator
+                if (autoRotationEnabled) {
+                    rotationIndicator.classList.add('active');
+                } else {
+                    rotationIndicator.classList.remove('active');
+                }
             });
             
             // Lighting Controls
@@ -769,6 +875,9 @@
                 zoomValue.textContent = '50%';
                 rotationSpeed.value = 50;
                 rotationValue.textContent = '50%';
+                autoRotationSpeedSlider.value = 30;
+                autoRotationValue.textContent = '30%';
+                autoRotationToggle.checked = false;
                 ambientLightSlider.value = 60;
                 ambientValue.textContent = '60%';
                 directionalLightSlider.value = 100;
@@ -783,6 +892,8 @@
                 // Apply values
                 cameraZoom.dispatchEvent(new Event('input'));
                 rotationSpeed.dispatchEvent(new Event('input'));
+                autoRotationSpeedSlider.dispatchEvent(new Event('input'));
+                autoRotationToggle.dispatchEvent(new Event('change'));
                 ambientLightSlider.dispatchEvent(new Event('input'));
                 directionalLightSlider.dispatchEvent(new Event('input'));
                 greenTintToggle.dispatchEvent(new Event('change'));
@@ -804,6 +915,7 @@
                 greenTintToggle.checked = false;
                 wireframeToggle.checked = true;
                 showGridToggle.checked = false;
+                autoRotationToggle.checked = false;
                 
                 cameraZoom.dispatchEvent(new Event('input'));
                 ambientLightSlider.dispatchEvent(new Event('input'));
@@ -811,6 +923,7 @@
                 greenTintToggle.dispatchEvent(new Event('change'));
                 wireframeToggle.dispatchEvent(new Event('change'));
                 showGridToggle.dispatchEvent(new Event('change'));
+                autoRotationToggle.dispatchEvent(new Event('change'));
             });
             
             document.getElementById('presetCyberpunk').addEventListener('click', () => {
@@ -827,6 +940,7 @@
                 showGridToggle.checked = true;
                 showScanlinesToggle.checked = true;
                 showDataStreamToggle.checked = true;
+                autoRotationToggle.checked = false;
                 
                 cameraZoom.dispatchEvent(new Event('input'));
                 ambientLightSlider.dispatchEvent(new Event('input'));
@@ -835,13 +949,62 @@
                 shadowsToggle.dispatchEvent(new Event('change'));
                 wireframeToggle.dispatchEvent(new Event('change'));
                 showGridToggle.dispatchEvent(new Event('change'));
+                showScanlinesToggle.dispatchEvent(new Event('change'));
+                showDataStreamToggle.dispatchEvent(new Event('change'));
+                autoRotationToggle.dispatchEvent(new Event('change'));
+            });
+            
+            document.getElementById('presetShowcase').addEventListener('click', () => {
+                // Showcase mode - auto rotation with cinematic lighting
+                cameraZoom.value = 60;
+                zoomValue.textContent = '60%';
+                autoRotationSpeedSlider.value = 40;
+                autoRotationValue.textContent = '40%';
+                autoRotationToggle.checked = true;
+                ambientLightSlider.value = 50;
+                ambientValue.textContent = '50%';
+                directionalLightSlider.value = 120;
+                directionalValue.textContent = '120%';
+                greenTintToggle.checked = true;
+                shadowsToggle.checked = true;
+                wireframeToggle.checked = false;
+                showGridToggle.checked = true;
+                showScanlinesToggle.checked = true;
+                showDataStreamToggle.checked = true;
+                
+                cameraZoom.dispatchEvent(new Event('input'));
+                autoRotationSpeedSlider.dispatchEvent(new Event('input'));
+                autoRotationToggle.dispatchEvent(new Event('change'));
+                ambientLightSlider.dispatchEvent(new Event('input'));
+                directionalLightSlider.dispatchEvent(new Event('input'));
+                greenTintToggle.dispatchEvent(new Event('change'));
+                shadowsToggle.dispatchEvent(new Event('change'));
+                wireframeToggle.dispatchEvent(new Event('change'));
+                showGridToggle.dispatchEvent(new Event('change'));
+                showScanlinesToggle.dispatchEvent(new Event('change'));
+                showDataStreamToggle.dispatchEvent(new Event('change'));
+            });
+            
+            // Disable auto-rotation when user interacts with controls
+            controls.addEventListener('start', () => {
+                if (autoRotationEnabled) {
+                    autoRotationToggle.checked = false;
+                    autoRotationToggle.dispatchEvent(new Event('change'));
+                }
             });
         }
 
         // Animation loop
         function animate() {
             requestAnimationFrame(animate);
-            controls.update();
+            
+            // Update auto rotation if enabled
+            if (autoRotationEnabled) {
+                controls.update();
+            } else {
+                controls.update();
+            }
+            
             renderer.render(scene, camera);
         }
         animate();
